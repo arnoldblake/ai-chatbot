@@ -6,7 +6,12 @@
 
 	const { input, handleSubmit, messages } = useChat({
 		initialMessages: [
-			{ id: '0', role: 'assistant', content: "Hello, I'm a bot. How can I help you today?" }
+			{
+				id: '0',
+				role: 'assistant',
+				content: "Hello, I'm a bot. How can I help you today?",
+				createdAt: new Date()
+			}
 		]
 	});
 	function onPromptKeydown(event: KeyboardEvent): void {
