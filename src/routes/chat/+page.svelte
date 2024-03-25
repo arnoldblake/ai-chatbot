@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { Avatar } from '@skeletonlabs/skeleton';
 	import { useChat } from 'ai/svelte';
+	import { page } from '$app/stores';
+	import aiLogo from '$lib/generated_00.png';
+
 	const { input, handleSubmit, messages } = useChat({
 		initialMessages: [
 			{ id: '0', role: 'assistant', content: "Hello, I'm a bot. How can I help you today?" }
@@ -23,25 +26,27 @@
 				{#each $messages as bubble}
 					{#if bubble.role === 'user'}
 						<div class="grid grid-cols-[auto_1fr] gap-2">
-							<Avatar src="https://i.pravatar.cc/?img={bubble.avatar}" width="w-12" />
+							{#if $page.data.session?.user?.image}
+								<Avatar src={$page.data.session.user.image} width="w-12" />
+							{/if}
 							<div class="card variant-soft space-y-2 rounded-tl-none p-4">
 								<header class="flex items-center justify-between">
 									<p class="font-bold">{bubble.name}</p>
-									<small class="opacity-50">{bubble.timestamp}</small>
+									<small class="opacity-50">{bubble.createdAt}</small>
 								</header>
 								<p>{bubble.content}</p>
 							</div>
 						</div>
 					{:else}
 						<div class="grid grid-cols-[1fr_auto] gap-2">
-							<div class="card space-y-2 rounded-tr-none p-4 {bubble.color}">
+							<div class="card variant-soft-primary space-y-2 rounded-tr-none p-4">
 								<header class="flex items-center justify-between">
 									<p class="font-bold">{bubble.name}</p>
-									<small class="opacity-50">{bubble.timestamp}</small>
+									<small class="opacity-50">{bubble.createdAt}</small>
 								</header>
 								<p>{bubble.content}</p>
 							</div>
-							<Avatar src="https://i.pravatar.cc/?img={bubble.avatar}" width="w-12" />
+							<Avatar src={aiLogo} width="w-12" />
 						</div>
 					{/if}
 				{/each}
