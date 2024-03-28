@@ -22,10 +22,9 @@ const config = {
 	plugins: [
 		// 4. Append the Skeleton plugin (after other plugins)
 		skeleton({
-            themes: { preset: [ "crimson" ]}
-        })
+			themes: { preset: ["crimson"] }
+		})
 	]
 } satisfies Config;
 
 export default config;
-						

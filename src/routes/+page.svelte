@@ -1,26 +1,49 @@
 <script lang="ts">
 	import { SignIn, SignOut } from '@auth/sveltekit/components';
-	import { page } from '$app/stores';
+	import { onMount } from 'svelte';
+
+	const words = ['Tell me a story.', 'Tell me a joke.'];
+	let i: number = 0,
+		j: number = 0;
+	let currentWord: string = '';
+	let isDeleting: boolean = false;
+	let done = false;
+
+	function type() {
+		currentWord = words[i];
+		const typewriter: HTMLElement | null = document.getElementById('typewriter');
+		if (isDeleting && typewriter && !done) {
+			typewriter.textContent = currentWord.substring(0, --j);
+			if (j == 0) {
+				isDeleting = false;
+				if (++i == words.length) {
+					i = 0;
+				}
+			}
+		} else if (typewriter) {
+			typewriter.textContent = currentWord.substring(0, ++j);
+			if (j == currentWord.length) {
+				isDeleting = true;
+			}
+		}
+		setTimeout(type, Math.random() * 200 + 60);
+	}
+
+	onMount(() => {
+		type();
+	});
 </script>
 
-<h1>SvelteKit Auth Example</h1>
-<div>
-	{#if $page.data.session}
-		{#if $page.data.session.user?.image}
-			<img src={$page.data.session.user.image} class="avatar" alt="User Avatar" />
-		{/if}
-		<span class="signedInText">
-			<small>Signed in as</small><br />
-			<strong>{$page.data.session.user?.name ?? 'User'}</strong>
-		</span>
-		<SignOut>
-			<div slot="submitButton" class="buttonPrimary">Sign out</div>
-		</SignOut>
-	{:else}
-		<span class="notSignedInText">You are not signed in</span>
+<section class="grid h-full grid-flow-col">
+	<div class="variant-gradient-primary-secondary bg-gradient-to-br">
+		<div class="m-auto flex h-full w-1/2 flex-col items-center justify-center">
+			<h2>AI can help you:</h2>
+			<h2 id="typewriter">Tell me a story.</h2>
+		</div>
+	</div>
+	<div class="m-auto justify-center">
 		<SignIn>
-			<div slot="submitButton" class="buttonPrimary">Sign in</div>
+			<div class="variant-soft-primary btn" slot="submitButton">Sign in</div>
 		</SignIn>
-		<SignIn provider="facebook" />
-	{/if}
-</div>
+	</div>
+</section>
