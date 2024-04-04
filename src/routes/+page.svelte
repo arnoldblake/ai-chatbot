@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { SignIn, SignOut } from '@auth/sveltekit/components';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 
 	const words = ['Tell me a story.', 'Tell me a joke.'];
 	let i: number = 0,
@@ -26,11 +26,15 @@
 				isDeleting = true;
 			}
 		}
-		setTimeout(type, Math.random() * 200 + 60);
 	}
 
+	let interval: NodeJS.Timeout;
 	onMount(() => {
-		type();
+		interval = setInterval(type, Math.random() * 200 + 60);
+	});
+
+	onDestroy(() => {
+		clearInterval(interval);
 	});
 </script>
 
@@ -42,8 +46,12 @@
 		</div>
 	</div>
 	<div class="m-auto justify-center">
+		<h1>Get Started</h1>
 		<SignIn>
 			<div class="variant-soft-primary btn" slot="submitButton">Sign in</div>
 		</SignIn>
+		<SignOut>
+			<div class="variant-soft-primary btn" slot="submitButton">Sign out</div>
+		</SignOut>
 	</div>
 </section>

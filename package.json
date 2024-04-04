@@ -12,7 +12,8 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:integration": "playwright test",
-		"test:unit": "vitest"
+		"test:unit": "vitest",
+		"generate": "drizzle-kit generate:pg"
 	},
 	"devDependencies": {
 		"@auth/core": "0.28.0",
@@ -28,6 +29,7 @@
 		"@sveltejs/adapter-auto": "^3.2.0",
 		"@sveltejs/kit": "^2.5.4",
 		"@sveltejs/vite-plugin-svelte": "^3.0.2",
+		"@tailwindcss/forms": "^0.5.7",
 		"@types/eslint": "^8.56.6",
 		"@types/node": "^20.11.30",
 		"@types/pg": "^8.11.4",
@@ -42,6 +44,7 @@
 		"eslint-plugin-svelte": "^2.35.1",
 		"langchain": "^0.1.30",
 		"pg": "^8.11.3",
+		"pgvector": "^0.1.8",
 		"postcss": "^8.4.38",
 		"postcss-load-config": "^5.0.3",
 		"prettier": "^3.2.5",

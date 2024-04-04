@@ -17,7 +17,20 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 	providers: [
 		GitHub({ clientId: GITHUB_ID, clientSecret: GITHUB_SECRET }),
 		azure_ad({ clientId: AZURE_AD_ID, clientSecret: AZURE_AD_SECRET, tenantId: AZURE_AD_TENANT_ID })
-	]
+	],
+	callbacks: {
+		async session({ session }) {
+			return {
+				expires: session.expires,
+				user: {
+					id: session.user.id,
+					name: session.user.name,
+					image: session.user.image,
+					email: session.user.email
+				}
+			};
+		}
+	}
 });
 
 export const authorizationHandle: Handle = async ({ event, resolve }) => {
