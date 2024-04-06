@@ -1,7 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { writeFileSync, unlinkSync } from 'fs';
-import { pgvectorStore, db } from '$lib/db';
-import { pgDocumentStore } from '$lib/schema';
+import { prisma } from '$lib/db.js';
 
 // Document loader & Splitter
 // TODO: Move this to a separate file
@@ -11,6 +10,13 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 export const actions = {
     create: async ({ request, locals }) => {
         const file = Object.fromEntries(await request.formData()).file as File;
+        const session = await locals.auth();
+        if (!session?.user?.id) {
+            return fail(401, {
+                error: true,
+                message: 'You must be logged in.'
+            });
+        }
 
         if (!file.name || file.name === 'undefined') {
             return fail(400, {
@@ -22,18 +28,37 @@ export const actions = {
         // Write the file to the static folder
         writeFileSync(`static/${file.name}`, Buffer.from(await file.arrayBuffer()));
 
-        const session = await locals.auth();
-        if (session && session.user && session.user.id) {
-            await db.insert(pgDocumentStore).values({
+        // Insert the file into the database
+        await prisma.file.create({
+            data: {
                 filename: file.name,
                 size: file.size,
                 userId: session.user.id
+            }
+        });
+        // await db.insert(pgDocumentStore).values({
+        //     filename: file.name,
+        //     size: file.size,
+        //     userId: session.user.id
+        // });
+    },
+    delete: async ({ request, locals }) => {
+        const data = Object.fromEntries(await request.formData());
+        const session = await locals.auth();
+        if (!session?.user?.id) {
+            return fail(401, {
+                error: true,
+                message: 'You must be logged in.'
             });
         }
-    },
-    delete: async ({ request }) => {
-        const data = Object.fromEntries(await request.formData());
-        await db.delete(pgDocumentStore).where(eq(pgDocumentStore.id, data.id as string));
+
+        // Delete the file from the database
+        await prisma.file.delete({
+            where: {
+                id: data.id as string,
+                userId: session.user.id
+            }
+        });
         unlinkSync(`static/${data.filename}`);
     },
     vectorize: async ({ request }) => {

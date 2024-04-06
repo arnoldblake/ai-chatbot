@@ -18,12 +18,11 @@
 	$: chat = useChat({
 		initialMessages: $page.data.messages,
 		sendExtraMessageFields: true,
-        id: $page.data.threads[0].id,
+		id: $page.data.threads[0].id,
 		body: {
-            thread: $page.data.threads[0].id
+			thread: $page.data.threads[0].id
 		}
-    });
-
+	});
 </script>
 
 <div class="m-6 grid grid-cols-[auto_1fr] gap-2">
@@ -51,11 +50,13 @@
 				<svelte:fragment slot="summary">File Upload</svelte:fragment>
 				<svelte:fragment slot="content">
 					<form method="POST" use:enhance enctype="multipart/form-data" action="/document?/create">
-						<label for="file">Upload a document:</label>
-						<input accept=".txt" id="file" name="file" type="file" />
-						<button class="variant-soft-tertiary btn" type="submit" title="Submit">
-							<FormkitSubmit />
-						</button>
+						<label for="file">Select a document:</label>
+						<div class="input-group input-group-divider grid-cols-[1fr_auto] gap-1">
+							<input accept=".txt" id="file" name="file" type="file" class="input" />
+							<button class="variant-soft-tertiary btn btn-sm" type="submit" title="Submit">
+								<FormkitSubmit />
+							</button>
+						</div>
 					</form>
 					<ul class="list">
 						{#each $page.data.files as file (file.id)}
@@ -134,5 +135,5 @@
 		</Accordion>
 	</div>
 	<!-- Start of the Chat -->
-	<Chat {...chat}/>
+	<Chat {...chat} />
 </div>
