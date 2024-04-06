@@ -51,7 +51,5 @@ export const actions = {
         ]);
 
         const result = await pgvectorStore.addDocuments(docOutput);
-
-        console.log(result);
     }
 };

@@ -1,15 +1,36 @@
 import type { RequestHandler } from './$types';
 import { StreamingTextResponse } from 'ai';
 import { stream } from '$lib/helpfull_ai';
+import { prisma } from '$lib/db';
+import { fail } from '@sveltejs/kit';
 
-export const POST: RequestHandler = async ({ request }) => {
-	const body = await request.json();
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const session = await locals.auth();
+	const { messages, thread } = await request.json();
+	if (!session?.user?.id) {
+		return fail(401, {
+			error: true,
+			message: 'You must be logged in.'
+		});
+	}
 
-	// If there is only one message and it is from the assistant, return 200
-	// This is done because the first message uses append inside of onMount
-	if (body.messages.length === 1 && body.messages[0].role === 'assistant') return new Response();
+	// Save the chat to the database
+	const message = messages[messages.length - 1];
+	await prisma.message.create({
+		data: {
+			role: message.role,
+			content: message.content,
+			userId: session.user.id,
+			threadId: thread
+		}
+	});
 
 	// Prompt the AI and stream the response
-	const response = await stream(body.messages.pop().content, JSON.stringify(body.messages));
+	const response = await stream(
+		messages.pop().content,
+		JSON.stringify(messages),
+		thread,
+		session.user.id
+	);
 	return new StreamingTextResponse(response);
 };

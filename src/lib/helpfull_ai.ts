@@ -2,6 +2,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnablePassthrough, RunnableSequence } from '@langchain/core/runnables';
+import { prisma } from '$lib/db';
 import {
 	AZURE_OPENAI_API_INSTANCE,
 	AZURE_OPENAI_API_KEY,
@@ -27,7 +28,7 @@ const answerChain = answerPrompt.pipe(model).pipe(new StringOutputParser());
 const intentPrompt = PromptTemplate.fromTemplate(intentTemplate);
 const intentChain = intentPrompt.pipe(model).pipe(new StringOutputParser());
 
-export function stream(prompt: string, messages: string) {
+export function stream(prompt: string, messages: string, threadId: string, userId: string) {
 	const chain = RunnableSequence.from([
 		{
 			intent: intentChain,
@@ -40,7 +41,18 @@ export function stream(prompt: string, messages: string) {
 		},
 		answerChain
 	]);
-	return chain.stream({
+	return chain.withListeners({
+		onEnd: async (run) => {
+			await prisma.message.create({
+				data: {
+					threadId: threadId,
+					userId: userId,
+					role: 'assistant',
+					content: run.outputs.output
+				}
+			});
+		}
+	}).stream({
 		prompt: prompt,
 		messages: messages
 	});

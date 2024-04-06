@@ -1,7 +1,9 @@
 import { SvelteKitAuth } from '@auth/sveltekit';
 import { redirect, type Handle } from '@sveltejs/kit';
-import { DrizzleAdapter } from '@auth/drizzle-adapter';
-import { db } from '$lib/db';
+
+import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PrismaClient } from '@prisma/client';
+
 import GitHub from '@auth/sveltekit/providers/github';
 import azure_ad from '@auth/sveltekit/providers/azure-ad';
 import {
@@ -12,8 +14,10 @@ import {
 	AZURE_AD_TENANT_ID
 } from '$env/static/private';
 
+const prisma = new PrismaClient();
+
 export const { handle, signIn, signOut } = SvelteKitAuth({
-	adapter: DrizzleAdapter(db),
+	adapter: PrismaAdapter(prisma),
 	providers: [
 		GitHub({ clientId: GITHUB_ID, clientSecret: GITHUB_SECRET }),
 		azure_ad({ clientId: AZURE_AD_ID, clientSecret: AZURE_AD_SECRET, tenantId: AZURE_AD_TENANT_ID })

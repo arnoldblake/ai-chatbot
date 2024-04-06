@@ -50,8 +50,5 @@
 		<SignIn>
 			<div class="variant-soft-primary btn" slot="submitButton">Sign in</div>
 		</SignIn>
-		<SignOut>
-			<div class="variant-soft-primary btn" slot="submitButton">Sign out</div>
-		</SignOut>
 	</div>
 </section>
