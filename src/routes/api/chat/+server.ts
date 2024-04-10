@@ -14,8 +14,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 	}
 
-	// Save the chat to the database
+	// Get the most recent message, assuming its the last one
 	const message = messages[messages.length - 1];
+
+	// Save the message to the database
 	await prisma.message.create({
 		data: {
 			role: message.role,

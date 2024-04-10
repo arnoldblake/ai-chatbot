@@ -70,15 +70,27 @@ model Message {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
   content   String
-  threadId  String
   userId    String
   role      String
+  threadId  String
 }
 
+// File model which represents a file uploaded by a user
+// and that exists in the local storage
 model File {
-  id       String @id @default(cuid())
+  id       String     @id @default(cuid())
   filename String
   size     Int
   userId   String
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  document Document[]
+}
+
+// Document model which represents a document that is vectorized
+model Document {
+  id      String                 @id @default(cuid())
+  content String
+  vector  Unsupported("vector")?
+  fileId  String
+  file    File                   @relation(fields: [fileId], references: [id], onDelete: Cascade)
 }

@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "docker-compose up -d && vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
 		"test": "npm run test:integration && npm run test:unit",
@@ -17,7 +17,6 @@
 	},
 	"devDependencies": {
 		"@auth/core": "0.28.0",
-		"@auth/drizzle-adapter": "^0.8.1",
 		"@auth/prisma-adapter": "^1.5.2",
 		"@auth/sveltekit": "^0.14.0",
 		"@iconify/json": "^2.2.197",
@@ -40,8 +39,6 @@
 		"@typescript-eslint/parser": "^7.5.0",
 		"ai": "^3.0.19",
 		"autoprefixer": "^10.4.19",
-		"drizzle-kit": "^0.20.14",
-		"drizzle-orm": "^0.30.7",
 		"eslint": "^8.57.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.35.1",

@@ -5,6 +5,9 @@ export const answerTemplate = `You are a helpful and enthusiastic support bot wh
     If you do not know the answer say "I'm sorry but I cannot answer your question.
     If there are multiple interpretations of the question, choose the most likely interpretation.
     Do not try to make up an answer. Always speak as if you are talking to a friend.
+    If provided use the information included in the relevant_content field to help answer the question.
+    ---
+    relevant_content: {relevant_content}
     ---
     history: {history}
     ---

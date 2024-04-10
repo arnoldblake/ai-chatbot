@@ -61,24 +61,27 @@
 					<ul class="list">
 						{#each $page.data.files as file (file.id)}
 							<li>
-								<span>
-									{file.filename}
-									{file.size}
-									<form action="/document?/delete" method="POST" use:enhance class="inline">
+								<form method="POST" use:enhance class="inline w-full">
+									<div class="input-group input-group-divider grid-cols-[1fr_auto_auto] gap-1">
+										<span class="pl-2">{file.filename}</span>
 										<button
-											class="variant-soft-tertiary btn-icon"
+											class="variant-soft-tertiary btn-sm"
 											title="Vectorize"
 											formaction="/document?/vectorize"
 										>
 											<MdiVectorPolylinePlus />
 										</button>
-										<button class="variant-soft-tertiary btn-icon" title="Delete">
+										<button
+											formaction="/document?/delete"
+											class="variant-soft-tertiary btn-sm"
+											title="Delete"
+										>
 											<MdiTrash />
 										</button>
 										<input type="hidden" name="id" value={file.id} />
 										<input type="hidden" name="filename" value={file.filename} />
-									</form>
-								</span>
+									</div>
+								</form>
 							</li>
 						{/each}
 					</ul>

@@ -3,6 +3,7 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnablePassthrough, RunnableSequence } from '@langchain/core/runnables';
 import { prisma } from '$lib/db';
+import { vectorStore } from './vdb';
 import {
 	AZURE_OPENAI_API_INSTANCE,
 	AZURE_OPENAI_API_KEY,
@@ -28,21 +29,27 @@ const answerChain = answerPrompt.pipe(model).pipe(new StringOutputParser());
 const intentPrompt = PromptTemplate.fromTemplate(intentTemplate);
 const intentChain = intentPrompt.pipe(model).pipe(new StringOutputParser());
 
-export function stream(prompt: string, messages: string, threadId: string, userId: string) {
+export async function stream(prompt: string, messages: string, threadId: string, userId: string) {
+
 	const chain = RunnableSequence.from([
 		{
 			intent: intentChain,
 			original_input: new RunnablePassthrough()
 		},
 		{
+			relevant_content: async ({ original_input }) => {
+				const result = await vectorStore.similaritySearch(original_input.prompt, 1)
+				return result[0].pageContent;
+			},
 			intent: ({ intent }) => intent,
-			history: ({ original_input }) => original_input.messages,
+			history: ({ original_input }) => original_input.history,
 			prompt: ({ original_input }) => original_input.prompt
 		},
 		answerChain
 	]);
 	return chain.withListeners({
 		onEnd: async (run) => {
+			if (!run.outputs?.output) return;
 			await prisma.message.create({
 				data: {
 					threadId: threadId,
@@ -54,6 +61,6 @@ export function stream(prompt: string, messages: string, threadId: string, userI
 		}
 	}).stream({
 		prompt: prompt,
-		messages: messages
+		history: messages
 	});
 }
