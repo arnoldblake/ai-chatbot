@@ -38,7 +38,8 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 });
 
 export const authorizationHandle: Handle = async ({ event, resolve }) => {
-	if (event.url.pathname.startsWith('/chat')) {
+	const pathname = event.url.pathname;
+	if (pathname.startsWith('/chat') || pathname.startsWith('/api')) {
 		const session = await event.locals.auth();
 		if (!session) {
 			throw redirect(303, '/auth/signin');

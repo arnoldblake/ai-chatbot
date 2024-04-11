@@ -2,17 +2,10 @@ import type { RequestHandler } from './$types';
 import { StreamingTextResponse } from 'ai';
 import { stream } from '$lib/helpfull_ai';
 import { prisma } from '$lib/db';
-import { fail } from '@sveltejs/kit';
 
 export const POST: RequestHandler = async ({ request, locals }) => {
 	const session = await locals.auth();
 	const { messages, thread } = await request.json();
-	if (!session?.user?.id) {
-		return fail(401, {
-			error: true,
-			message: 'You must be logged in.'
-		});
-	}
 
 	// Get the most recent message, assuming its the last one
 	const message = messages[messages.length - 1];
@@ -22,8 +15,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		data: {
 			role: message.role,
 			content: message.content,
-			userId: session.user.id,
-			threadId: thread
+			threadId: thread,
+			userId: session?.user?.id || ''
 		}
 	});
 
@@ -32,7 +25,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		messages.pop().content,
 		JSON.stringify(messages),
 		thread,
-		session.user.id
+		session?.user?.id || ''
 	);
 	return new StreamingTextResponse(response);
 };

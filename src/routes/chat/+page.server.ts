@@ -1,4 +1,4 @@
-import { fail, type Actions } from '@sveltejs/kit';
+import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/db';
 
@@ -63,19 +63,15 @@ async function loadFiles(id: string) {
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.auth();
-	if (!session?.user?.id) {
-		return fail(401, {
-			error: true,
-			message: 'You must be logged in.'
-		});
-	}
+
+	const id = session?.user?.id || '';
 
 	// Get all threads for the user
-	const threads = await loadThreads(session.user.id);
+	const threads = await loadThreads(id);
 	// Get all messages for the first thread
 	const messages = await loadMessages(threads[0].id);
 	// Get all files for the user
-	const files = await loadFiles(session.user.id);
+	const files = await loadFiles(id);
 
 	return { files, threads, messages };
 };
@@ -83,33 +79,21 @@ export const load: PageServerLoad = async ({ locals }) => {
 export const actions = {
 	create: async ({ locals }) => {
 		const session = await locals.auth();
-		if (!session?.user?.id) {
-			return fail(401, {
-				error: true,
-				message: 'You must be logged in.'
-			});
-		}
 
 		await prisma.thread.create({
 			data: {
-				userId: session.user.id
+				userId: session?.user?.id || ''
 			}
 		});
 	},
 	read: async ({ request, locals }) => {
 		const session = await locals.auth();
 		const formData = Object.fromEntries(await request.formData());
-		if (!session?.user?.id) {
-			return fail(401, {
-				error: true,
-				message: 'You must be logged in.'
-			});
-		}
 
 		await prisma.thread.update({
 			where: {
 				id: formData.id as string,
-				userId: session.user.id
+				userId: session?.user?.id
 			},
 			data: {
 				updatedAt: new Date()
@@ -119,17 +103,11 @@ export const actions = {
 	update: async ({ request, locals }) => {
 		const session = await locals.auth();
 		const formData = Object.fromEntries(await request.formData());
-		if (!session?.user?.id) {
-			return fail(401, {
-				error: true,
-				message: 'You must be logged in.'
-			});
-		}
 
 		await prisma.thread.update({
 			where: {
 				id: formData.id as string,
-				userId: session.user.id
+				userId: session?.user?.id
 			},
 			data: {
 				name: formData.name as string
@@ -139,17 +117,11 @@ export const actions = {
 	delete: async ({ request, locals }) => {
 		const session = await locals.auth();
 		const formData = Object.fromEntries(await request.formData());
-		if (!session?.user?.id) {
-			return fail(401, {
-				error: true,
-				message: 'You must be logged in.'
-			});
-		}
 		await prisma.thread.delete({
 			where: {
 				id: formData.id as string,
 				AND: {
-					userId: session.user.id
+					userId: session?.user?.id
 				}
 			}
 		});
