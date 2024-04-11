@@ -1,18 +1,29 @@
+## About
+An AI chat experience using LangChain, Azure OpenAI, PosgreSQL, and SvelteKit. This original purpose of this project was to enforce the skills I was learning developing another AI appliaction. I've tried to keep the code clear and concise and I will be continuing to improve on the project. There is still a lot to implement but the MVP is there.
+
+## Features
+### Langchain  
+[x] Embeddings  
+[ ] Agents  
+[ ] Tools  
+[ ] Chat Memory
+
 ## TODO
 
 ### Chat
-[ ] Persist chats to database  
-[ ] Allow for multiple chat threads  
-[ ] Allow for multiple chat threadsthreads 
+[x] Persist chats to database  
+[x] Allow for multiple chat threads  
+
 ### File Upload 
 [x] Update schema to store file information  
 [x] Load uploaded file information to display a file list  
 [ ] Check for existing file and return an error display a toast  
 [ ] Method to delete uploaded files
 [ ] Improve the UI for file upload and file list
+
 ### RAG
-[ ] Text split and vectorize uploaded files  
-[ ] Create langchain runnable sequence RAG  
+[x] Text split and vectorize uploaded files  
+[x] Create langchain runnable sequence RAG  
 
 ## Setup
 
@@ -25,7 +36,6 @@ pnpm install
 Once you've cloned the project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
 ```bash
-docker-compose up
 npm run dev
 
 # or start the server and open the app in a new browser tab
