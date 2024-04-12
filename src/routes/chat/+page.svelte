@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { enhance } from '$app/forms';
-	import Chat from '$lib/Chat.svelte';
 	import { Accordion, AccordionItem, RangeSlider } from '@skeletonlabs/skeleton';
 	// Icons
 	import MdiVectorPolylinePlus from '~icons/mdi/vector-polyline-plus';
@@ -9,20 +8,10 @@
 	import MdiTrash from '~icons/mdi/trash';
 	import MdiPlus from '~icons/mdi/plus';
 	import MdiEdit from '~icons/mdi/edit';
-	import { useChat } from 'ai/svelte';
 
 	// Chat Settings TODO: Hook these into the langchain model
 	let temperature = 9;
 	let memory = 5;
-
-	$: chat = useChat({
-		initialMessages: $page.data.messages,
-		sendExtraMessageFields: true,
-		id: $page.data.threads[0].id,
-		body: {
-			thread: $page.data.threads[0].id
-		}
-	});
 </script>
 
 <div class="m-6 grid grid-cols-[auto_1fr] gap-2">
@@ -137,6 +126,4 @@
 			</AccordionItem>
 		</Accordion>
 	</div>
-	<!-- Start of the Chat -->
-	<Chat {...chat} />
 </div>

@@ -4,7 +4,7 @@ import { prisma } from '$lib/db';
 
 async function loadThreads(id: string) {
 	// Get all of the threads for the user
-	let threads = await prisma.thread.findMany({
+	let threads = await prisma.chat.findMany({
 		where: {
 			userId: {
 				equals: id
@@ -18,7 +18,7 @@ async function loadThreads(id: string) {
 	// If there are no threads ie a brand new user, create one
 	let thread;
 	if (threads.length === 0) {
-		thread = await prisma.thread.create({
+		thread = await prisma.chat.create({
 			data: {
 				userId: id
 			}
@@ -32,7 +32,7 @@ async function loadMessages(id: string) {
 	// Get all messages for the thread
 	const messages = await prisma.message.findMany({
 		where: {
-			threadId: {
+			chatId: {
 				equals: id
 			}
 		},
@@ -64,14 +64,14 @@ async function loadFiles(id: string) {
 export const load: PageServerLoad = async ({ locals }) => {
 	const session = await locals.auth();
 
-	const id = session?.user?.id || '';
+	const userId = session?.user?.id || '';
 
 	// Get all threads for the user
-	const threads = await loadThreads(id);
+	const threads = await loadThreads(userId);
 	// Get all messages for the first thread
 	const messages = await loadMessages(threads[0].id);
 	// Get all files for the user
-	const files = await loadFiles(id);
+	const files = await loadFiles(userId);
 
 	return { files, threads, messages };
 };
@@ -90,7 +90,7 @@ export const actions = {
 		const session = await locals.auth();
 		const formData = Object.fromEntries(await request.formData());
 
-		await prisma.thread.update({
+		await prisma.chat.update({
 			where: {
 				id: formData.id as string,
 				userId: session?.user?.id
@@ -104,7 +104,7 @@ export const actions = {
 		const session = await locals.auth();
 		const formData = Object.fromEntries(await request.formData());
 
-		await prisma.thread.update({
+		await prisma.chat.update({
 			where: {
 				id: formData.id as string,
 				userId: session?.user?.id
@@ -117,7 +117,7 @@ export const actions = {
 	delete: async ({ request, locals }) => {
 		const session = await locals.auth();
 		const formData = Object.fromEntries(await request.formData());
-		await prisma.thread.delete({
+		await prisma.chat.delete({
 			where: {
 				id: formData.id as string,
 				AND: {
