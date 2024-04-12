@@ -1,13 +1,5 @@
 import { pgTable, text, timestamp, uuid, primaryKey, integer } from 'drizzle-orm/pg-core';
 
-// export const pgVectorStore = pgTable("pg_vector_store", {
-// 	id: uuid("id").defaultRandom().primaryKey().notNull(),
-// 	content: text("content"),
-// 	metadata: jsonb("metadata"),
-// 	vector: vector("vector", { dimension: 512 }).notNull(),
-// 	fileId: integer("fileId").notNull().references(() => pgDocumentStore.id, { onDelete: "cascade" }),
-// });
-
 export const Files = pgTable('files', {
 	id: uuid('id').defaultRandom().primaryKey().notNull(),
 	filename: text('filename').notNull(),
