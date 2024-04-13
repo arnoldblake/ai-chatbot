@@ -5,6 +5,9 @@
 	import AIAvatar from '$lib/generated_00.png';
 	import type { ChatRequestOptions } from 'ai';
 
+	import MdiPaperAirplane from '~icons/mdi/paper-airplane';
+	import MdiPaperclip from '~icons/mdi/paperclip';
+
 	export let input;
 	export let messages;
 	export let handleSubmit: (e: any, chatRequestOptions?: ChatRequestOptions) => void;
@@ -60,7 +63,7 @@
 				<div
 					class="input-group input-group-divider w-64 grid-cols-[auto_1fr_auto] rounded-container-token lg:w-full"
 				>
-					<button class="input-group-shim">+</button>
+					<button class="input-group-shim"><MdiPaperclip /></button>
 					<textarea
 						bind:value={$input}
 						class="border-0 bg-transparent ring-0"
@@ -74,7 +77,7 @@
 						class={$input ? 'variant-filled-primary' : 'input-group-shim'}
 						on:click={handleSubmit}
 					>
-						<i class="fa-solid fa-paper-plane" />
+						<MdiPaperAirplane />
 					</button>
 				</div>
 			</section>

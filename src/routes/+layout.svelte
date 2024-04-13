@@ -20,7 +20,6 @@
 	}
 
 	export let data;
-	console.log(data);
 
 	const datePreviousWeek = new Date(new Date().setDate(new Date().getDate() - 7));
 	const datePreviousMonth = new Date(new Date().setDate(new Date().getDate() - 30));
@@ -51,7 +50,6 @@
 	<svelte:fragment slot="sidebarLeft">
 		<Navigation>
 			<svelte:fragment slot="thisWeek">
-				<h2>This Week</h2>
 				<ul class="list">
 					{#each data.chats as chat (chat.id)}
 						{#if chat.updatedAt >= datePreviousWeek}
@@ -62,7 +60,6 @@
 			</svelte:fragment>
 
 			<svelte:fragment slot="thisMonth">
-				<h2>This Month</h2>
 				<ul class="list">
 					{#each data.chats as chat (chat.id)}
 						{#if chat.updatedAt >= datePreviousMonth && chat.updatedAt < datePreviousWeek}
@@ -72,7 +69,6 @@
 				</ul>
 			</svelte:fragment>
 			<svelte:fragment slot="everythingElse">
-				<h2>Everything Else</h2>
 				<ul class="list">
 					{#each data.chats as chat (chat.id)}
 						{#if chat.updatedAt < datePreviousMonth}
