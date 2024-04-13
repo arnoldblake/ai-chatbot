@@ -2,7 +2,6 @@ import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnablePassthrough, RunnableSequence } from '@langchain/core/runnables';
-import { prisma } from '$lib/db';
 import { vectorStore } from './vdb';
 import {
 	AZURE_OPENAI_API_INSTANCE,
@@ -12,6 +11,7 @@ import {
 } from '$env/static/private';
 
 import { answerTemplate, intentTemplate } from '$lib/prompts';
+import type { Message } from 'ai/svelte';
 
 const model = new ChatOpenAI({
 	azureOpenAIApiInstanceName: AZURE_OPENAI_API_INSTANCE,
@@ -29,7 +29,7 @@ const answerChain = answerPrompt.pipe(model).pipe(new StringOutputParser());
 const intentPrompt = PromptTemplate.fromTemplate(intentTemplate);
 const intentChain = intentPrompt.pipe(model).pipe(new StringOutputParser());
 
-export async function stream({ messages, onEnd }) {
+export async function stream({ messages, onEnd }: { messages: Message[]; }) {
 
 	const chain = RunnableSequence.from([
 		{
@@ -51,7 +51,7 @@ export async function stream({ messages, onEnd }) {
 	return chain.withListeners({
 		onEnd: onEnd
 	}).stream({
-		prompt: messages.pop().content,
+		prompt: messages.pop()?.content,
 		history: JSON.stringify(messages)
 	});
 }
