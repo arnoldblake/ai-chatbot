@@ -1,7 +1,20 @@
 import type { LayoutServerLoad } from './$types';
+import { prisma } from '$lib/db';
 
 export const load: LayoutServerLoad = async ({ locals }) => {
-    return {
-        session: await locals.auth()
-    };
+    const session = await locals.auth();
+    const userId = session?.user?.id || '';
+    // Get all of the threads for the user
+    const chats = await prisma.chat.findMany({
+        where: {
+            userId: {
+                equals: userId
+            }
+        },
+        orderBy: {
+            updatedAt: 'desc'
+        }
+    });
+
+    return { chats: chats }
 };

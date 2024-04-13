@@ -20,7 +20,7 @@ export const load: PageServerLoad = async ({ locals, params }) => {
             content: true,
             createdAt: true
         }
-    }) as Message[]; // Assure TS that the return value is an array of Message objects
+    }) as Message[];
 
     return { messages }
 };

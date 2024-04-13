@@ -80,7 +80,7 @@ export const actions = {
 	create: async ({ locals }) => {
 		const session = await locals.auth();
 
-		await prisma.thread.create({
+		await prisma.chat.create({
 			data: {
 				userId: session?.user?.id || ''
 			}
