@@ -8,17 +8,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const { messages, chatId } = await request.json();
 	const userId = session?.user?.id || '';
 
-	// If the chatId is empty, create a new chat
-	let chat;
-	if (chatId === '') {
-		chat = await prisma.chat.create({
-			data: {
-				userId: userId
-			}
-		});
-	}
-
-	if (!chat) return new Response('Chat not found', { status: 404 });
+	await prisma.chat.upsert({
+		where: {
+			id: chatId
+		},
+		update: {
+			updatedAt: new Date()
+		},
+		create: {
+			id: chatId,
+			userId: userId
+		}
+	});
 
 	// Get the most recent message, assuming its the last one
 	const message = messages[messages.length - 1];
@@ -28,7 +29,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		data: {
 			role: message.role,
 			content: message.content,
-			chatId: chat.id,
+			chatId: chatId,
 			userId: userId
 		}
 	});

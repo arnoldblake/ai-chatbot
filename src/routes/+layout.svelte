@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Navigation from '$lib/Navigation.svelte';
+	import ChatHistoryItem from '$lib/ChatHistoryItem.svelte';
 	import '../app.pcss';
 	import {
 		AppShell,
@@ -53,7 +54,9 @@
 				<ul class="list">
 					{#each data.chats as chat (chat.id)}
 						{#if chat.updatedAt >= datePreviousWeek}
-							<li><span><button class="btn">{chat.name}</button></span></li>
+							<ChatHistoryItem>
+								<svelte:fragment slot="item">{chat.name}</svelte:fragment>
+							</ChatHistoryItem>
 						{/if}
 					{/each}
 				</ul>
@@ -63,7 +66,9 @@
 				<ul class="list">
 					{#each data.chats as chat (chat.id)}
 						{#if chat.updatedAt >= datePreviousMonth && chat.updatedAt < datePreviousWeek}
-							<li><span><button class="btn">{chat.name}</button></span></li>
+							<ChatHistoryItem>
+								<svelte:fragment slot="item">{chat.name}</svelte:fragment>
+							</ChatHistoryItem>
 						{/if}
 					{/each}
 				</ul>
@@ -72,7 +77,9 @@
 				<ul class="list">
 					{#each data.chats as chat (chat.id)}
 						{#if chat.updatedAt < datePreviousMonth}
-							<li><span><button class="btn">{chat.name}</button></span></li>
+							<ChatHistoryItem>
+								<svelte:fragment slot="item">{chat.name}</svelte:fragment>
+							</ChatHistoryItem>
 						{/if}
 					{/each}
 				</ul>
