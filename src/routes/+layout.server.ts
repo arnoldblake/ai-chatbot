@@ -16,5 +16,5 @@ export const load: LayoutServerLoad = async ({ locals }) => {
         }
     });
 
-    return { chats: chats }
+    return { session: session, chats: chats }
 };
