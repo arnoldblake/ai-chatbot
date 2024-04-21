@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import Navigation from '$lib/Navigation.svelte';
 	import ChatHistoryItem from '$lib/ChatHistoryItem.svelte';
 	import '../app.pcss';
@@ -49,42 +50,38 @@
 		</AppBar>
 	</svelte:fragment>
 	<svelte:fragment slot="sidebarLeft">
-		<Navigation>
-			<svelte:fragment slot="thisWeek">
-				<ul class="list">
-					{#each data.chats as chat (chat.id)}
-						{#if chat.updatedAt >= datePreviousWeek}
-							<ChatHistoryItem>
-								<svelte:fragment slot="item">{chat.name}</svelte:fragment>
-							</ChatHistoryItem>
-						{/if}
-					{/each}
-				</ul>
-			</svelte:fragment>
+		{#if $page.url.pathname === '/chat'}
+			<Navigation>
+				<svelte:fragment slot="thisWeek">
+					<ul class="list">
+						{#each data.chats as chat (chat.id)}
+							{#if chat.updatedAt >= datePreviousWeek}
+								<ChatHistoryItem {...chat}></ChatHistoryItem>
+							{/if}
+						{/each}
+					</ul>
+				</svelte:fragment>
 
-			<svelte:fragment slot="thisMonth">
-				<ul class="list">
-					{#each data.chats as chat (chat.id)}
-						{#if chat.updatedAt >= datePreviousMonth && chat.updatedAt < datePreviousWeek}
-							<ChatHistoryItem>
-								<svelte:fragment slot="item">{chat.name}</svelte:fragment>
-							</ChatHistoryItem>
-						{/if}
-					{/each}
-				</ul>
-			</svelte:fragment>
-			<svelte:fragment slot="everythingElse">
-				<ul class="list">
-					{#each data.chats as chat (chat.id)}
-						{#if chat.updatedAt < datePreviousMonth}
-							<ChatHistoryItem>
-								<svelte:fragment slot="item">{chat.name}</svelte:fragment>
-							</ChatHistoryItem>
-						{/if}
-					{/each}
-				</ul>
-			</svelte:fragment>
-		</Navigation>
+				<svelte:fragment slot="thisMonth">
+					<ul class="list">
+						{#each data.chats as chat (chat.id)}
+							{#if chat.updatedAt >= datePreviousMonth && chat.updatedAt < datePreviousWeek}
+								<ChatHistoryItem {...chat}></ChatHistoryItem>
+							{/if}
+						{/each}
+					</ul>
+				</svelte:fragment>
+				<svelte:fragment slot="everythingElse">
+					<ul class="list">
+						{#each data.chats as chat (chat.id)}
+							{#if chat.updatedAt < datePreviousMonth}
+								<ChatHistoryItem {...chat}></ChatHistoryItem>
+							{/if}
+						{/each}
+					</ul>
+				</svelte:fragment>
+			</Navigation>
+		{/if}
 	</svelte:fragment>
 	<slot />
 </AppShell>

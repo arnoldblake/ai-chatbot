@@ -2,12 +2,12 @@ import type { Actions } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { prisma } from '$lib/db';
 
-async function loadThreads(id: string) {
+async function loadChats(chatId: string) {
     // Get all of the threads for the user
-    let threads = await prisma.chat.findMany({
+    let chats = await prisma.chat.findMany({
         where: {
             userId: {
-                equals: id
+                equals: chatId
             }
         },
         orderBy: {
@@ -16,24 +16,24 @@ async function loadThreads(id: string) {
     });
 
     // If there are no threads ie a brand new user, create one
-    let thread;
-    if (threads.length === 0) {
-        thread = await prisma.chat.create({
+    let chat;
+    if (chats.length === 0) {
+        chat = await prisma.chat.create({
             data: {
-                userId: id
+                userId: chatId
             }
         });
-        threads = [thread];
+        chats = [chat];
     }
-    return threads;
+    return chats;
 }
 
-async function loadMessages(id: string) {
+async function loadMessages(chatId: string) {
     // Get all messages for the thread
     const messages = await prisma.message.findMany({
         where: {
             chatId: {
-                equals: id
+                equals: chatId
             }
         },
         orderBy: {
@@ -63,17 +63,16 @@ async function loadFiles(id: string) {
 
 export const load: PageServerLoad = async ({ locals }) => {
     const session = await locals.auth();
-
     const userId = session?.user?.id || '';
 
     // Get all threads for the user
-    const threads = await loadThreads(userId);
+    const chats = await loadChats(userId);
     // Get all messages for the first thread
-    const messages = await loadMessages(threads[0].id);
+    const messages = await loadMessages(chats[0].id);
     // Get all files for the user
     const files = await loadFiles(userId);
 
-    return { files, threads, messages };
+    return { files, chats, chat: chats[0], messages };
 };
 
 export const actions = {
@@ -88,41 +87,44 @@ export const actions = {
     },
     read: async ({ request, locals }) => {
         const session = await locals.auth();
-        const formData = Object.fromEntries(await request.formData());
+        const { chatId } = Object.fromEntries(await request.formData());
+        const userId = session?.user?.id || '';
 
-        await prisma.chat.update({
+        const chat = await prisma.chat.findFirst({
             where: {
-                id: formData.id as string,
-                userId: session?.user?.id
-            },
-            data: {
-                updatedAt: new Date()
+                id: chatId as string,
+                userId: userId
             }
         });
+
+        const messages = await loadMessages(chat?.id as string);
+
+        return { chat, messages };
     },
     update: async ({ request, locals }) => {
         const session = await locals.auth();
-        const formData = Object.fromEntries(await request.formData());
+        const { chatId, chatName } = Object.fromEntries(await request.formData());
+        const userId = session?.user?.id || '';
 
         await prisma.chat.update({
             where: {
-                id: formData.id as string,
-                userId: session?.user?.id
+                id: chatId as string,
+                userId: userId
             },
             data: {
-                name: formData.name as string
+                name: chatName as string
             }
         });
     },
     delete: async ({ request, locals }) => {
         const session = await locals.auth();
-        const formData = Object.fromEntries(await request.formData());
+        const { chatId } = Object.fromEntries(await request.formData());
+        const userId = session?.user?.id || '';
+
         await prisma.chat.delete({
             where: {
-                id: formData.id as string,
-                AND: {
-                    userId: session?.user?.id
-                }
+                id: chatId as string,
+                userId: userId
             }
         });
     }
