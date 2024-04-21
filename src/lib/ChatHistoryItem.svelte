@@ -6,6 +6,9 @@
 	export let id: string;
 	export let name: string;
 
+	// Collect the rest of the properties passed
+	const restP = $$restProps;
+
 	function handleFormSubmit({
 		formElement,
 		submitter,
