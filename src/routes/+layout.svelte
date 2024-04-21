@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { enhance } from '$app/forms';
 	import Navigation from '$lib/Navigation.svelte';
 	import ChatHistoryItem from '$lib/ChatHistoryItem.svelte';
 	import '../app.pcss';
@@ -11,7 +12,8 @@
 		initializeStores,
 		getDrawerStore
 	} from '@skeletonlabs/skeleton';
-	import DensityMedium from 'virtual:icons/material-symbols/density-medium';
+	import DensityMedium from '~icons/material-symbols/density-medium';
+	import MdiPlus from '~icons/mdi/plus';
 
 	// Initialize the stores
 	initializeStores();
@@ -51,6 +53,9 @@
 	</svelte:fragment>
 	<svelte:fragment slot="sidebarLeft">
 		{#if $page.url.pathname === '/chat'}
+			<form action="/chat?/create" method="POST" use:enhance>
+				<button class="variant-soft-primary btn"><MdiPlus /></button>
+			</form>
 			<Navigation>
 				<svelte:fragment slot="thisWeek">
 					<ul class="list">
