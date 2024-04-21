@@ -2,7 +2,6 @@ import { ChatOpenAI } from '@langchain/openai';
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { RunnablePassthrough, RunnableSequence } from '@langchain/core/runnables';
-import { prisma } from '$lib/db';
 import { vectorStore } from './vdb';
 import {
 	AZURE_OPENAI_API_INSTANCE,
@@ -12,6 +11,7 @@ import {
 } from '$env/static/private';
 
 import { answerTemplate, intentTemplate } from '$lib/prompts';
+import type { Message } from 'ai/svelte';
 
 const model = new ChatOpenAI({
 	azureOpenAIApiInstanceName: AZURE_OPENAI_API_INSTANCE,
@@ -29,7 +29,7 @@ const answerChain = answerPrompt.pipe(model).pipe(new StringOutputParser());
 const intentPrompt = PromptTemplate.fromTemplate(intentTemplate);
 const intentChain = intentPrompt.pipe(model).pipe(new StringOutputParser());
 
-export async function stream(prompt: string, messages: string, threadId: string, userId: string) {
+export async function stream({ messages, onEnd }: { messages: Message[]; }) {
 
 	const chain = RunnableSequence.from([
 		{
@@ -39,6 +39,7 @@ export async function stream(prompt: string, messages: string, threadId: string,
 		{
 			relevant_content: async ({ original_input }) => {
 				const result = await vectorStore.similaritySearch(original_input.prompt, 1)
+				if (result.length === 0) return '';
 				return result[0].pageContent;
 			},
 			intent: ({ intent }) => intent,
@@ -48,19 +49,9 @@ export async function stream(prompt: string, messages: string, threadId: string,
 		answerChain
 	]);
 	return chain.withListeners({
-		onEnd: async (run) => {
-			if (!run.outputs?.output) return;
-			await prisma.message.create({
-				data: {
-					threadId: threadId,
-					userId: userId,
-					role: 'assistant',
-					content: run.outputs.output
-				}
-			});
-		}
+		onEnd: onEnd
 	}).stream({
-		prompt: prompt,
-		history: messages
+		prompt: messages.pop()?.content,
+		history: JSON.stringify(messages)
 	});
 }

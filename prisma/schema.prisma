@@ -44,7 +44,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  threads       Thread[]
+  chats         Chat[]
   files         File[]
 }
 
@@ -56,7 +56,7 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Thread {
+model Chat {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
@@ -72,7 +72,7 @@ model Message {
   content   String
   userId    String
   role      String
-  threadId  String
+  chatId    String
 }
 
 // File model which represents a file uploaded by a user
