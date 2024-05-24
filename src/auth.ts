@@ -5,7 +5,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
 
 import GitHub from '@auth/sveltekit/providers/github';
-import azure_ad from '@auth/sveltekit/providers/azure-ad';
+import Entra from '@auth/sveltekit/providers/microsoft-entra-id';
 import {
 	GITHUB_ID,
 	GITHUB_SECRET,
@@ -20,7 +20,7 @@ export const { handle, signIn, signOut } = SvelteKitAuth({
 	adapter: PrismaAdapter(prisma),
 	providers: [
 		GitHub({ clientId: GITHUB_ID, clientSecret: GITHUB_SECRET }),
-		azure_ad({ clientId: AZURE_AD_ID, clientSecret: AZURE_AD_SECRET, tenantId: AZURE_AD_TENANT_ID })
+		Entra({ clientId: AZURE_AD_ID, clientSecret: AZURE_AD_SECRET, tenantId: AZURE_AD_TENANT_ID })
 	],
 	callbacks: {
 		async session({ session }) {
